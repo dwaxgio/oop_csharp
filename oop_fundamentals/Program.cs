@@ -17,11 +17,18 @@ var product3 = new Product(3, "Paulanear", 7);
 
 var customer = new Customer(1, "Dwaxgio");
 
-var sale = new Sale(1, customer);
+var invoice1 = new Invoice1();
+var invoice2 = new Invoice2();
+var send1 = new Send1();
+
+//var sale = new Sale(1, customer, invoice1, send1);
+var sale = new Sale(1, customer, invoice2, send1);
 sale.AddConcept(product1, 2);
 sale.AddConcept(product3, 1);
 
 Console.WriteLine(sale.Total);
+
+sale.CreateInvoice();
 
 // Example # 2 **
 
@@ -118,6 +125,9 @@ public class Sale
     public List<Concept> Concepts { get; set; }
     public DateTime Date { get; set; }
 
+    private IInvoice _invoice;
+    private ISend _send;
+
     public decimal Total
     {
         get
@@ -132,19 +142,68 @@ public class Sale
     }
 
     // Constructor
-    public Sale(int id, Customer customer)
+    public Sale(int id, Customer customer, IInvoice invoice, ISend send)
     {
         Id = id;
         Customer = customer;
         // Initialize object Concepts
         Concepts = new List<Concept>();
         Date = DateTime.Now;
+        _invoice = invoice;
+        _send = send;
     }
 
     // Behavior
     public void AddConcept(Product product, int quantity)
     {
         Concepts.Add(new Concept(product, quantity));
+    }
+
+    // Interface
+    public void CreateInvoice()
+    {
+        //Console.WriteLine("Generate bill according to goberment entity");
+        //Console.WriteLine("Send by email");
+
+        _invoice.Create();
+        _send.Send("Bill is sent");
+    } 
+}
+
+public interface IInvoice
+{
+    public void Create();
+}
+
+public interface ISend
+{
+    public void Send(string content);
+}
+
+public class Invoice1 : IInvoice
+{
+    public void Create()
+    {
+        Console.WriteLine("XML Generated");
+        Console.WriteLine("XML Sent");
+        Console.WriteLine("XML Saved");
+    }
+}
+public class Invoice2 : IInvoice
+{
+    public void Create()
+    {
+        Console.WriteLine("XML 2 Generated");
+        Console.WriteLine("XML 2 Sent");
+        Console.WriteLine("XML 2 Saved");
+    }
+}
+
+public class Send1 : ISend
+{
+    public void Send(string content)
+    {
+        Console.WriteLine("Sent via email");
     }
 }
 // Example # 2 **
